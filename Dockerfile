@@ -30,6 +30,11 @@ RUN mkdir -p downloads
 # Expose port for Render
 EXPOSE $PORT
 
+# Update app.py to use PORT environment variable
+RUN sed -i 's/app.run()/app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))/' app.py
+
+# Add os import to app.py if not present
+RUN grep -q "import os" app.py || sed -i '1i import os' app.py
+
 # Start both Flask app and Telegram bot
 CMD gunicorn --bind 0.0.0.0:$PORT app:app & python3 main.py
-

@@ -212,7 +212,7 @@ async def upload(bot: Client, m: Message):
     raw_text0 = input1.text
     await input1.delete(True)
     
-    await editable.edit("🎬 **Select video quality:**\n\n360, 480, 720, 1080, 4k")
+    await editable.edit("🎬 **Select video quality:**\n\n144, 240, 360, 480, 720, 1080")
     input2: Message = await bot.listen(editable.chat.id)
     raw_text2 = input2.text
     await input2.delete(True)
@@ -284,41 +284,12 @@ async def upload(bot: Client, m: Message):
 
                 # Determine download strategy
                 if "youtu" in url:
-                    ytf = 'bv*[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[height<={raw_text2}][ext=mp4]'
-                    
-                    
-                    cmd = (
-                            
-                     f'yt-dlp '
-    f'--force-ipv4 '
-    f'--retries infinite '
-    f'--http-chunk-size 10M '
-    f'--downloader ffmpeg '
-    f'--concurrent-fragments 20 '
-    f'--cookies-from-browser chrome '
-    f'--user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" '
-    f'-f "{ytf}" "{url}" '
-    f'-o "{name}.%(ext)s"'
-
-    
-                        )
-
-
+                    ytf = f"b[height<={raw_text2}][ext=mp4]/bv[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
+                    cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.%(ext)s"'
                 elif url.endswith('.pdf'):
                     cmd = f'yt-dlp -o "{name}.pdf" "{url}"'
                 else:
-                    
-                    cmd = (
-                            f'yt-dlp '
-                            f'--downloader ffmpeg '
-                            f'--concurrent-fragments 32 '
-                            f'--user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" '
-                            f'--add-header "Accept-Language: en-US,en;q=0.9" '
-                            f'--add-header "Connection: keep-alive" '
-                            f'-f "bestvideo[height<={raw_text2}]+bestaudio/best[height<={raw_text2}]" "{url}" '
-                            f'-o "{name}.%(ext)s"'
-                        )
-
+                    cmd = f'yt-dlp -f "best" "{url}" -o "{name}.%(ext)s"'
 
                 cc = f'**📹 Video #{str(count).zfill(3)}**\n**📁 Title:** {name1}\n**📦 Batch:** {raw_text0}\n{MR}'
                 cc1 = f'**📄 Document #{str(count).zfill(3)}**\n**📁 Title:** {name1}\n**📦 Batch:** {raw_text0}\n{MR}'
